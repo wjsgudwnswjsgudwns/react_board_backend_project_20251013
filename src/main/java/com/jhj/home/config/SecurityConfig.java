@@ -42,7 +42,7 @@ public class SecurityConfig {
             )
 
             // 로그인 설정
-            .formLogin(login -> login
+            .formLogin(login -> login // 아이디와 비밀번호 확인은 여기서 -> 로그인이 되면 세션 생성
                 .loginPage("/api/auth/login") // 커스텀 로그인 페이지 경로
                 .usernameParameter("username")
                 .passwordParameter("password")
