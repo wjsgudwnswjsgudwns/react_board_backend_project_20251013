@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,4 +68,49 @@ public class BoardController {
 		}
 		
 	}
+	
+	// 특정 글 삭제
+	@DeleteMapping("{id}")
+	public ResponseEntity<?> deletePost(@PathVariable("id") Long id, Authentication auth) {
+		
+		Optional<Board> optionalBoard = boardRepository.findById(id);
+	    if (optionalBoard.isEmpty()) {
+	        return ResponseEntity.status(404).body("게시글이 존재하지 않습니다.");
+	    }
+
+	    Board board = optionalBoard.get();
+
+	    if (auth == null || !auth.getName().equals(board.getAuthor().getUsername())) {
+	        return ResponseEntity.status(403).body("삭제 권한이 없습니다.");
+	    }
+
+	    boardRepository.delete(board);
+	    return ResponseEntity.ok("삭제 완료");
+			
+	}
+	
+	// 글 수정
+	@PutMapping("{id}")
+	public ResponseEntity<?> updatePost(@PathVariable("id") Long id, @RequestBody Board updateBoard, Authentication auth) {
+		
+		Optional<Board> optionalBoard = boardRepository.findById(id);
+		if (optionalBoard.isEmpty()) {
+	        return ResponseEntity.status(404).body("게시글이 존재하지 않습니다.");
+	    }
+		
+		Board board = optionalBoard.get();
+		
+		if (auth == null || !auth.getName().equals(board.getAuthor().getUsername())) {
+			return ResponseEntity.status(403).body("수정 권한이 없습니다.");
+		}
+		
+		board.setTitle(updateBoard.getTitle());
+		board.setContent(updateBoard.getContent());
+		
+		boardRepository.save(board);
+		
+		return ResponseEntity.ok(board);
+		
+	}
+	
 }
