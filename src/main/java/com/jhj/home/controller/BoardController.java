@@ -1,12 +1,14 @@
 package com.jhj.home.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import com.jhj.home.entity.Board;
 import com.jhj.home.entity.SiteUser;
 import com.jhj.home.repository.BoardRepository;
 import com.jhj.home.repository.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/api/board")
@@ -47,5 +51,19 @@ public class BoardController {
 		boardRepository.save(board);
 		
 		return ResponseEntity.ok(board);
+	}
+	
+	// 특정 글 호출
+	@GetMapping("{id}")
+	public ResponseEntity<?> getPost(@PathVariable("id") Long id) {
+//		Board board = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시글"));
+//		return board;
+		Optional<Board> _board = boardRepository.findById(id);
+		if(_board.isPresent()) {
+			return ResponseEntity.ok(_board.get());
+		} else {
+			return ResponseEntity.status(404).body("존재하지 않는 게시글입니다.");
+		}
+		
 	}
 }
