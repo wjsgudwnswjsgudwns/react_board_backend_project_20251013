@@ -36,7 +36,7 @@ public class SecurityConfig {
 
             // 요청 권한 설정
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**").permitAll() // 공개 페이지
+                .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**","/api/comments","/api/comments/**").permitAll() // 공개 페이지
                 .anyRequest().authenticated() // 나머지는 인증 필요
             )
 
