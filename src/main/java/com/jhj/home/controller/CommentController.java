@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,5 +112,24 @@ public class CommentController {
 		 return ResponseEntity.ok(comment);
 	}
 	
+	//댓글 삭제
+	@DeleteMapping("/{commentId}")
+	public ResponseEntity<?> deleteComment (@PathVariable("commentId") Long commentId, Authentication auth) {
+		
+		 Optional<Comment> _comment = commentRepository.findById(commentId);
+		 if(_comment.isEmpty()) {
+			 return ResponseEntity.status(404).body("존재하지 않는 댓글입니다.");
+		 }
+		 
+		 Comment comment = _comment.get();
+		 
+		 if(!comment.getAuthor().getUsername().equals(auth.getName())) {
+			 return ResponseEntity.status(403).body("삭제 권한이 없습니다");
+		 }
+		 
+		 commentRepository.deleteById(commentId);
+		
+		return ResponseEntity.ok("댓글 삭제 완료");
+	}
 
 }
