@@ -37,8 +37,10 @@ public class SecurityConfig {
             // 요청 권한 설정
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/signup", "/api/auth/login", "/api/board", "/api/board/**","/api/comments","/api/comments/**").permitAll() // 공개 페이지
+                .requestMatchers("/","/board","/board/**","/board/write","/login","/signup").permitAll()
                 .anyRequest().authenticated() // 나머지는 인증 필요
             )
+            
 
             // 로그인 설정
             .formLogin(login -> login // 아이디와 비밀번호 확인은 여기서 -> 로그인이 되면 세션 생성
